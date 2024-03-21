@@ -4,7 +4,6 @@ import random, time
 import math
 
 
-# TODO: section a : 3
 def smart_heuristic(env: WarehouseEnv, robot_id: int):
     agent = env.get_robot(robot_id)
 
@@ -35,43 +34,9 @@ class AgentGreedyImproved(AgentGreedy):
 
 
 class AgentMinimax(Agent):
-    # TODO: section b : 1
     def __init__(self, time_limit=1):
         self.time_limit = time_limit
         self.agent_id = None
-
-    def heuristic_func(self, env: WarehouseEnv, robot_id: int):
-        agent = env.get_robot(robot_id)
-        available_packages = [p for p in env.packages if p.on_board]
-        sorted_packages = sorted(available_packages, key=lambda p: manhattan_distance(agent.position, p.position))
-        sorted_chargers = sorted(env.charge_stations,
-                                 key=lambda station: manhattan_distance(agent.position, station.position))
-
-        score = 0
-
-        if agent.package is None:
-            if manhattan_distance(agent.position, sorted_packages[0].position) + manhattan_distance(
-                    sorted_packages[0].position, sorted_packages[0].destination) <= agent.battery:
-                score += 10
-                remaining_battery = agent.battery - (
-                            manhattan_distance(agent.position, sorted_packages[0].position) + manhattan_distance(
-                        sorted_packages[0].position, sorted_packages[0].destination))
-
-                if manhattan_distance(sorted_chargers[0].position, agent.position) <= remaining_battery:
-                    score += 5
-                elif manhattan_distance(agent.position, sorted_packages[0].position) + manhattan_distance(
-                        sorted_packages[0].position, sorted_chargers[0].position) <= agent.battery:
-                    score += 10
-            else:
-                score += 5
-        else:
-            if manhattan_distance(agent.position, agent.package.destination) <= agent.battery:
-                score += 10
-            else:
-                score += 5
-
-        return score
-
     def RB_minimax(self, env: WarehouseEnv, agent_id, depth):
         if env.done() or depth == 0 or (time.time() - self.start_time) > self.time_limit:
             return smart_heuristic(env, agent_id)
